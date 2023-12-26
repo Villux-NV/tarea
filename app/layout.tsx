@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <div className='h-48'></div>
 
-          <div>
+          <div className='h-2/4 mt-16'>
             {children}
           </div>
 

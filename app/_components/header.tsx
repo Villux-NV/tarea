@@ -43,15 +43,20 @@ export default function Header() {
                 }
             </nav>
 
-            <div className="col-start-2 col-end-3">
-                <h1 className="flex justify-center items-center h-20">
-                    Dashboard
-                </h1>
-            </div>
+            {
+                isLoaded && user &&
+                <div className="col-start-1 col-end-4">
+                    <div className="col-start-2 col-end-3">
+                        <h1 className="flex justify-center items-center h-20">
+                            Dashboard
+                        </h1>
+                    </div>
 
-            <div className="col-start-1 col-end-4">
-                <DashNav />
-            </div>
+                    <div className="col-start-1 col-end-4">
+                        <DashNav />
+                    </div>
+                </div>
+            }
 
         </header>
     )
