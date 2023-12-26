@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://Nick-Villarreal-s-workspace-4j8rdb.us-west-2.xata.sh/db/tarea-auth",
+  "codegen": {
+    "output": "./xata.ts"
+  }
+}
