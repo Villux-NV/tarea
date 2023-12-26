@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from './_components/header';
 import Footer from './_components/footer';
 import { ClerkProvider } from '@clerk/nextjs';
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Tarea Playground',
@@ -32,10 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <div className='h-48'></div>
 
-          <div className='h-2/4 mt-16'>
+          <div className='h-fill'>
             {children}
           </div>
 
+          <div className='h-20'></div>
           <div className='bottom-0 fixed w-full border-t'>
             <Footer />
           </div>

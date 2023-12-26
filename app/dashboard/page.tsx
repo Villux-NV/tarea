@@ -1,6 +1,6 @@
 import { getXataClient } from "@/xata";
 import { auth } from "@clerk/nextjs";
-import { any, string, z } from "zod";
+import { z } from "zod";
 import { redirect } from "next/navigation";
 import CreateProject from "./_createProject/page";
 import ProjectCard from "./projectCard/projectCard";
@@ -15,6 +15,15 @@ const project = z.object({
 
 const projectId = z.object({
   id: z.string()
+})
+
+const detailMap = z.map(z.string(), z.string());
+
+type DetailMap = z.infer<typeof detailMap>;
+
+const detail = z.object({
+  description: z.string(),
+  projectId: z.string()
 })
 
 export default async function Dashboard({ searchParams }: SearchParamProps) {
@@ -53,19 +62,39 @@ export default async function Dashboard({ searchParams }: SearchParamProps) {
 
   async function deleteProject(formData: FormData) {
     'use server';
+    const xataClient = getXataClient();
 
     const parsedProject = projectId.parse({
       id: formData.get('id')
     })
 
-    if (!userId) {
-      return;
-    }
+    const details = await xataClient.db.projectDetails.filter({ projectId: parsedProject.id }).getMany()
 
-    const xataClient = getXataClient();
+    if (!userId) return;
+
     await xataClient.db.masterProjects.delete(parsedProject);
-    
+    await xataClient.db.projectDetails.delete(details.map(e => e.id));
+
     redirect('/dashboard');
+  }
+
+  async function addDetail(formData: FormData) {
+    'use server';
+
+    const parsedDetail = detail.parse({
+      description: "test description",
+      projectId: formData.get('projectId')
+    })
+
+    if (!userId) return;
+
+    console.log(parsedDetail)
+  }
+
+  async function viewCard(formData: FormData) {
+    'use server';
+
+    console.log(formData.get('view'));
   }
   
   return (
@@ -78,7 +107,8 @@ export default async function Dashboard({ searchParams }: SearchParamProps) {
         <div className="w-full h-full flex flex-wrap">
           {
             projects.map(proj => 
-              <ProjectCard key={proj.id} id={proj.id} title={proj.project} userId={proj.userId} handleDeleteProject={deleteProject} />
+              <ProjectCard key={proj.id} id={proj.id} title={proj.project} userId={proj.userId} 
+                handleDeleteProject={deleteProject} handleDetail={addDetail} viewCard={viewCard}/>
             )
             
           }
