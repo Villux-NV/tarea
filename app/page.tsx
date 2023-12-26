@@ -15,7 +15,7 @@ export default function Home() {
     <main className='border h-full flex flex-col justify-around items-center'>
         <h1>
           {/* make blink */}
-          ..your home for all your work
+          ..a place to house all your work
         </h1>
 
         <div className='border h-1/4 w-3/5 flex justify-center items-center'>
@@ -23,7 +23,7 @@ export default function Home() {
         </div>
 
         <div>
-          <p>retro take on modern solutions.. </p>
+          <p>retro take on a modern solution.. (idk emoji) </p>
         </div>
     </main>
   )

@@ -46,8 +46,8 @@ export default async function Dashboard({ searchParams }: SearchParamProps) {
     const newRecord = {...parsedProject, userId};
     const xataClient = getXataClient();
     // handle error when less than 4 characters
-    // await xataClient.db.masterProjects.create(newRecord);
-    console.log(formData.get('project'))
+    await xataClient.db.masterProjects.create(newRecord);
+    
     redirect('/dashboard');
   }
 
