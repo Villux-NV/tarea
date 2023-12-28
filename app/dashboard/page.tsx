@@ -19,8 +19,6 @@ const projectId = z.object({
 
 const detailMap = z.map(z.string(), z.string());
 
-type DetailMap = z.infer<typeof detailMap>;
-
 const detail = z.object({
   description: z.string(),
   projectId: z.string()
@@ -80,15 +78,18 @@ export default async function Dashboard({ searchParams }: SearchParamProps) {
 
   async function addDetail(formData: FormData) {
     'use server';
-
-    const parsedDetail = detail.parse({
-      description: "test description",
-      projectId: formData.get('projectId')
-    })
+    const xataClient = getXataClient();
 
     if (!userId) return;
 
-    console.log(parsedDetail)
+    const parsedDetail = detail.parse({
+      description: formData.get('detail'),
+      projectId: formData.get('id')
+    })
+
+    await xataClient.db.projectDetails.create(parsedDetail);
+    
+    redirect('/dashboard');
   }
 
   async function viewCard(formData: FormData) {
