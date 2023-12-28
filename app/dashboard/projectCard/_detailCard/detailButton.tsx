@@ -1,52 +1,29 @@
 'use client';
 
-import { useEffect, useState, useRef } from "react";
-
-
-function useComponentVisible(initialIsVisible) {
-    const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
-    const ref = useRef(null);
-
-    
-    const handleClickOutside = (e) => {
-        if (ref.current && !ref.current.contains(e.target)) {
-            setIsComponentVisible(false);
-        }
-    }
-    
-    useEffect(() => {
-        document.addEventListener("click", handleClickOutside, true);
-        
-        return () => {
-            document.removeEventListener("click", handleClickOutside, true);
-        };
-    }, []);
-
-    return { ref, isComponentVisible, setIsComponentVisible }
-}
-
+// import { useEffect, useState, useRef } from "react";
+import useComponentVisible from "@/app/_components/useComponentVisible";
 
 export default function DetailButton({ handleDetail, id }: { handleDetail: (formData : FormData) => void, id: string }) {
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
     
-    function detailFun (formData: FormData) {
+    function detailFunc (formData: FormData) {
         setIsComponentVisible(false);
         formData.set('id', id);
         handleDetail(formData)
     }
 
     return (
-        <div className="col-end-5 ">
+        <div className="col-end-5 relative">
             <button className="border w-8 my-1.5" onClick={() => setIsComponentVisible(true)}>
                 +
             </button>
 
             {
                 isComponentVisible &&
-                <div ref={ref} className="border fixed bg-slate bg-opacity-80 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1">
+                <div ref={ref} className="absolute bottom-10 -right-4 bg-slate bg-opacity-80 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1">
                     <form 
                         className="w-72 flex justify-center"
-                        action={(formData) => detailFun(formData)}
+                        action={(formData) => detailFunc(formData)}
                         ref={ref}
                     >
                         <div className='outline-double w-3/5'>
@@ -59,7 +36,8 @@ export default function DetailButton({ handleDetail, id }: { handleDetail: (form
                     
                             <input
                                 className="shadow appearance-non w-full py-2 px-3 
-                                    text-black leading-tight" 
+                                    text-black leading-tight"
+                                autoFocus
                                 name="detail"
                                 id="detail"
                                 type="text"

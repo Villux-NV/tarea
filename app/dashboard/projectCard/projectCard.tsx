@@ -1,41 +1,42 @@
 import DetailCard from "./_detailCard/detailCard";
-import DetailButton from "./_detailButton/detailButton";
+import DetailButton from "./_detailCard/detailButton";
+import { useState } from "react";
 
-export default function ProjectCard({ id, title, userId, handleDeleteProject, handleDetail, viewCard }: { id: string, title: string | null | undefined, 
-    userId: string, handleDeleteProject: (formData : FormData) => void, handleDetail: (formData : FormData) => void, viewCard: (formData : FormData) => void }) {
+export default function ProjectCard({ id, title, userId, handleDeleteProject, handleDetail, viewCard, handleDeleteDetail }: { id: string, title: string | null | undefined, 
+    userId: string, handleDeleteProject: (formData : FormData) => void, handleDetail: (formData : FormData) => void, 
+    viewCard: (formData : FormData) => void, handleDeleteDetail: (formData : FormData) => void }) {
 
     if (!userId) return
 
 
-    return (
+    return ( 
         <div key={id} className="border w-64 h-80 m-6 flex flex-col justify-between">
-            <div className="m-2">
-                <p>{title}</p>
+            <div className="m-2 flex justify-between">
+                <p className="flex-grow">{title}</p>
+                <div className="w-6 shrink-0">{"->"}</div>
             </div>
-
-            <div className="h-3/4 mx-1 px-2 -indent-4">
-                <DetailCard userId={userId} projectId={id} />
+        
+            <div className="h-3/4 border mx-2">
+                <DetailCard userId={userId} projectId={id} handleDeleteDetail={handleDeleteDetail} />
             </div>
-
+        
             <div className="grid grid-cols-4">
                 <form className="ml-2 flex items-end" action={viewCard}>
                     <input className="hidden" name="view" value={id}></input>
                     <button className="" type="submit">
-                        view
+                    view
                     </button>
                 </form>
-
+            
                 <form className="ml-2 flex items-end" action={handleDeleteProject}>
                     <input className="hidden" name="id" value={id}></input>
                     <button className="" type="submit">
-                        delete
+                    delete
                     </button>
                 </form>
-
-
+            
                 <DetailButton handleDetail={handleDetail} id={id} />
             </div>
         </div>  
-
     )
 }

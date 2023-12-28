@@ -5,8 +5,6 @@ import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import tareaDarkLogo from '../../public/tareaDarkLogo.png';
-import { DashNav } from "./dashNav";
-
 
 export default function Header() {
     const {user, isLoaded} = useUser();
@@ -37,27 +35,11 @@ export default function Header() {
                     isLoaded && user &&
                     <div className="w-full flex justify-between items-center px-8">
                         <Link href={'/dashboard'}>Dashboard</Link>
-                        <li>Profile</li>
+                        <Link href={'/support'}>Support</Link>
                         <UserButton afterSignOutUrl="/">Logout</UserButton>
                     </div>
                 }
             </nav>
-
-            {
-                isLoaded && user &&
-                <div className="col-start-1 col-end-4">
-                    <div className="col-start-2 col-end-3">
-                        <h1 className="flex justify-center items-center h-20">
-                            Dashboard
-                        </h1>
-                    </div>
-
-                    <div className="col-start-1 col-end-4">
-                        <DashNav />
-                    </div>
-                </div>
-            }
-
         </header>
     )
 }

@@ -9,7 +9,7 @@ export default function Home() {
   };
 
   return (
-    <main className='border h-max flex flex-col justify-around items-center'>
+    <main className='border h-max flex flex-col justify-around items-center mt-36'>
         <h1 className='h-28 flex items-center'>
           {/* make blink */}
           ..a place to house all your work
