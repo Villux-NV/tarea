@@ -1,15 +1,31 @@
 'use client';
 
 import Link from "next/link";
+import CreateProject from "../dashboard/_createProject/page";
+import useComponentVisible from "./useComponentVisible";
 
-export const DashNav = () => {
+export const DashNav = ({ handleCreateProject }: { handleCreateProject: (formData : FormData) => void }) => {
+    const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
+
+    function handleCreateFunc (formData: FormData) {
+        setIsComponentVisible(false);
+        handleCreateProject(formData);
+    }
+
     return (
         <div className={'className= flex justify-center ' }>
             {/* "flex justify-center"  + getClass() */}
             {/* add hover  */}
-            <Link href="/dashboard?show=true" className="px-8">Add Project</Link>
+            <button className="px-8" onClick={() => setIsComponentVisible(true)}>Add Project</button>
             <div className="px-8">Quick Task</div>
             <div className="px-8">Urgent</div>
+
+            {
+                isComponentVisible &&
+                <div ref={ref} className="fixed top-48">
+                    <CreateProject handleCreateProject={handleCreateFunc}/>
+                </div>
+            }
         </div>
 
     )

@@ -27,14 +27,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
           </div>
 
-          <div className='h-48'></div>
+          <div className='h-20'></div>
 
           <div className='h-fill'>
             {children}
           </div>
 
           <div className='h-20'></div>
-          <div className='bottom-0 fixed w-full border-t'>
+          <div className='bottom-0 fixed w-full border-t px-2'>
             <Footer />
           </div>
         </body>
