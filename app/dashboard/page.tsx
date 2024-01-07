@@ -2,8 +2,8 @@ import { getXataClient } from "@/xata";
 import { auth } from "@clerk/nextjs";
 import { z } from "zod";
 import { redirect } from "next/navigation";
-import ProjectCard from "./projectCard/projectCard";
 import { DashNav } from "../_components/dashNav";
+import ProjectCardContainer from "./projectCard/projectCardContainer";
 
 const project = z.object({
   project: z.string().min(4)
@@ -18,6 +18,13 @@ const detail = z.object({
   projectId: z.string()
 })
 
+const projectCard = z.object({
+  id: z.string(),
+  title: z.string(),
+  userId: z.string()
+})
+
+
 export default async function Dashboard() {
   const {userId} = auth();
   const xataClient = getXataClient();
@@ -26,24 +33,35 @@ export default async function Dashboard() {
     redirect('/');
   }
 
-  const projects = await xataClient.db.masterProjects.
+  let projects = await xataClient.db.masterProjects.
     filter({
       userId
-    })
+    }).select([])
     .getMany();
 
+  let projectList = projects.map(p => {
+      let { xata, ...projectList } = p;
+  
+      return projectList
+    }
+  )
+    
+  let maxProjectOrder = Math.max(...projectList.map(p => p.cardOrder));
+  
+  
   async function createProject(formData: FormData) {
     'use server';
+    const cardOrder = maxProjectOrder + 1;
     
     const parsedProject = project.parse({
-        project: formData.get('project')
+      project: formData.get('project')
     })
-
+    
     if (!userId) {
       return;
     }
     
-    const newRecord = {...parsedProject, userId};
+    const newRecord = {...parsedProject, userId, cardOrder};
     const xataClient = getXataClient();
     // handle error when less than 4 characters
     await xataClient.db.masterProjects.create(newRecord);
@@ -75,6 +93,8 @@ export default async function Dashboard() {
 
     if (!userId) return;
 
+    console.log('hello')
+
     const parsedDetail = detail.parse({
       description: formData.get('detail'),
       projectId: formData.get('id')
@@ -103,13 +123,15 @@ export default async function Dashboard() {
   async function viewCard(formData: FormData) {
     'use server';
 
-    console.log(formData.get('view'));
+    console.log(formData.get('id'));
   }
 
+
   return (
-    <div className="flex flex-col w-full bg-black items-center">
+    <div className="flex flex-col h-full bg-black items-center">
         <div className="w-full h-28 "></div>
-        <div className="w-full fixed left-0 top-20 bg-black border-b">
+
+        <div className="w-full fixed left-0 top-20 bg-black border-b z-40">
             <div className="col-start-2 col-end-3">
                 <h1 className="flex justify-center items-center h-20">
                     Dashboard
@@ -121,14 +143,7 @@ export default async function Dashboard() {
             </div>
         </div>
 
-        <div className="w-full h-full flex flex-wrap">
-          {
-            projects.map(proj => 
-              <ProjectCard key={proj.id} id={proj.id} title={proj.project} userId={proj.userId} 
-                handleDeleteProject={deleteProject} handleDetail={addDetail} viewCard={viewCard} handleDeleteDetail={deleteDetail}/>
-            )
-          }
-        </div>
+        <ProjectCardContainer projects={projectList} handleAddDetail={addDetail} handleDeleteCard={deleteProject} />
     </div>
   )
 }

@@ -13,11 +13,11 @@ export const DashNav = ({ handleCreateProject }: { handleCreateProject: (formDat
     }
 
     return (
-        <div className={'className= flex justify-center ' }>
+        <div className={'className= flex justify-center z-40' }>
             {/* "flex justify-center"  + getClass() */}
             {/* add hover  */}
             <button className="px-8" onClick={() => setIsComponentVisible(true)}>Add Project</button>
-            <div className="px-8">Quick Task</div>
+            <button className="px-8" onClick={() => quickTask()}>Quick Task</button>
             <div className="px-8">Urgent</div>
 
             {

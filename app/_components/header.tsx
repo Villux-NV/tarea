@@ -10,7 +10,7 @@ export default function Header() {
     const {user, isLoaded} = useUser();
 
     return (
-        <header className="grid grid-cols-3 border-b z-50 bg-black">
+        <header className="grid grid-cols-3 bg-black">
                {/* {'className: z-50 fixed top-0 grid grid-cols-3 w-full p-6' + getClass()} */}
             <div className="">
                 <Image 

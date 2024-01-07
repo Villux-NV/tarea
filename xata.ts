@@ -12,6 +12,7 @@ const tables = [
     columns: [
       { name: "project", type: "string", unique: true },
       { name: "userId", type: "string", notNull: true, defaultValue: "null" },
+      { name: "cardOrder", type: "int", unique: true },
     ],
     revLinks: [{ column: "projectId", table: "projectDetails" }],
   },
@@ -20,6 +21,7 @@ const tables = [
     columns: [
       { name: "description", type: "text" },
       { name: "projectId", type: "link", link: { table: "masterProjects" } },
+      { name: "detailOrder", type: "int", notNull: true, defaultValue: "1" },
     ],
   },
 ] as const;
