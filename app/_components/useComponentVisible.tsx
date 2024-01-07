@@ -4,8 +4,7 @@ export default function useComponentVisible(initialIsVisible: boolean) {
     const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
     const ref = useRef(null);
 
-    
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: any) => {
         if (ref.current && !ref.current.contains(e.target)) {
             setIsComponentVisible(false);
         }

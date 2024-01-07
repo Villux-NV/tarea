@@ -22,19 +22,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="font-mono w-screen h-screen text-rose bg-black">
-          <div className='top-0 fixed w-full'>
+        <body className="font-mono w-screen h-screen text-rose bg-black overflow-x-hidden">
+          <div className='top-0 fixed w-full z-40 overflow-x-hidden'>
             <Header />
           </div>
 
           <div className='h-20'></div>
 
-          <div className='h-fill'>
+          <div className=''>
             {children}
           </div>
 
           <div className='h-20'></div>
-          <div className='bottom-0 fixed w-full border-t px-2'>
+
+          <div className='bottom-0 fixed w-full border-t px-2 bg-black'>
             <Footer />
           </div>
         </body>

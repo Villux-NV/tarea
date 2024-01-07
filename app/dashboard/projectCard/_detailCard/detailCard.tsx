@@ -18,7 +18,7 @@ export default async function DetailCard({ userId, projectId, handleDeleteDetail
                         </div>
                         <div className="w-6 shrink-0 flex justify-center">
                             <form action={handleDeleteDetail}>
-                                <input className="hidden" name="detailId" value={det.id}></input>
+                                <input className="hidden" name="detailId" defaultValue={det.id}></input>
                                 <button type="submit" className="w-full h-full">
                                     -
                                 </button>

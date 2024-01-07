@@ -6,6 +6,10 @@ import useComponentVisible from "@/app/_components/useComponentVisible";
 export default function DetailButton({ handleDetail, id }: { handleDetail: (formData : FormData) => void, id: string }) {
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
     
+    function addDetail (bool) {
+        console.log('add detail', bool)
+    }
+
     function detailFunc (formData: FormData) {
         setIsComponentVisible(false);
         formData.set('id', id);
@@ -14,13 +18,13 @@ export default function DetailButton({ handleDetail, id }: { handleDetail: (form
 
     return (
         <div className="col-end-5 relative">
-            <button className="border w-8 my-1.5" onClick={() => setIsComponentVisible(true)}>
+            <button className="border w-8 my-1.5" onClick={() => addDetail(true)}>
                 +
             </button>
 
             {
                 isComponentVisible &&
-                <div ref={ref} className="absolute bottom-10 -right-4 bg-slate bg-opacity-80 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1">
+                <div ref={ref} className="absolute bottom-10 -right-4 bg-slate bg-opacity-80 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1 z-0">
                     <form 
                         className="w-72 flex justify-center"
                         action={(formData) => detailFunc(formData)}
