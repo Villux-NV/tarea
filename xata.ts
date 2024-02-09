@@ -21,7 +21,7 @@ const tables = [
     columns: [
       { name: "description", type: "text" },
       { name: "projectId", type: "link", link: { table: "masterProjects" } },
-      { name: "detailOrder", type: "int", notNull: true, defaultValue: "1" },
+      { name: "detailOrder", type: "int", notNull: true, defaultValue: "0" },
     ],
   },
 ] as const;
@@ -49,7 +49,7 @@ const defaultOptions = {
 
 export class XataClient extends DatabaseClient<DatabaseSchema> {
   constructor(options?: BaseClientOptions) {
-    super({ ...defaultOptions, ...options }, tables);
+    super({ ...defaultOptions, ...options, apiKey: process.env.NEXT_PUBLIC_XATA_API_KEY, enableBrowser: true }, tables);
   }
 }
 

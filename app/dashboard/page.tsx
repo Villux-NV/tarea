@@ -1,3 +1,4 @@
+
 import { getXataClient } from "@/xata";
 import { auth } from "@clerk/nextjs";
 import { z } from "zod";
@@ -15,7 +16,8 @@ const projectId = z.object({
 
 const detail = z.object({
   description: z.string(),
-  projectId: z.string()
+  projectId: z.string(),
+  detailOrder: z.number()
 })
 
 const projectCard = z.object({
@@ -29,9 +31,11 @@ export default async function Dashboard() {
   const {userId} = auth();
   const xataClient = getXataClient();
 
+  let projectUUID = crypto.randomUUID();
+
   if (!userId) {
     redirect('/');
-  }
+  };
 
   let projects = await xataClient.db.masterProjects.
     filter({
@@ -42,13 +46,23 @@ export default async function Dashboard() {
   let projectList = projects.map(p => {
       let { xata, ...projectList } = p;
   
-      return projectList
+      return projectList;
     }
-  )
-    
-  let maxProjectOrder = Math.max(...projectList.map(p => p.cardOrder));
+  );
+
+  projectList.sort((a, b) => a.cardOrder - b.cardOrder);
+  let maxProjectOrder = projectList[projectList.length - 1].cardOrder;
   
-  
+  let details = await xataClient.db.projectDetails.getAll();
+  let detailList = details.map(d => {
+    const { xata, ...rest } = d;
+    return {
+      ...rest, projectId: d.projectId?.id
+    };
+  });
+  detailList.sort((a, b) => a.detailOrder - b.detailOrder)
+  let maxDetailOrder = detailList[detailList.length - 1].detailOrder;
+
   async function createProject(formData: FormData) {
     'use server';
     const cardOrder = maxProjectOrder + 1;
@@ -93,15 +107,17 @@ export default async function Dashboard() {
 
     if (!userId) return;
 
-    console.log('hello')
+    maxDetailOrder++;
 
     const parsedDetail = detail.parse({
       description: formData.get('detail'),
-      projectId: formData.get('id')
+      projectId: formData.get('id'),
+      detailOrder: maxDetailOrder,
     })
-
+    
     await xataClient.db.projectDetails.create(parsedDetail);
     
+    console.log(parsedDetail);
     redirect('/dashboard');
   }
 
@@ -123,7 +139,11 @@ export default async function Dashboard() {
   async function viewCard(formData: FormData) {
     'use server';
 
+    if (!userId) return;
+
     console.log(formData.get('id'));
+
+    redirect('/dashboard');
   }
 
 
@@ -143,7 +163,11 @@ export default async function Dashboard() {
             </div>
         </div>
 
-        <ProjectCardContainer projects={projectList} handleAddDetail={addDetail} handleDeleteCard={deleteProject} />
+        <div key={projectUUID}>
+          <ProjectCardContainer userId={userId} projects={projectList} details={detailList} handleAddDetail={addDetail} handleDeleteCard={deleteProject} 
+            handleDeleteDetail={deleteDetail} />
+        </div>
+
     </div>
   )
 }

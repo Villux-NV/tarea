@@ -1,14 +1,10 @@
-export default function Modal({ onClose, handleAddDetail }: { onClose: any, handleAddDetail: (formData : FormData) => void }) {
-    const actionDetail = (formData: FormData) => {
-        onClose();
-        handleAddDetail(formData);
-    }
+export default function Modal({ onClose, projectId, handleAddDetail }: { onClose: any, projectId: string, handleAddDetail: (formData : FormData) => void }) {
 
     return (
-        <div className="border absolute bottom-0 -right-5 bg-slate bg-opacity-100 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1">
+        <div className="border absolute bottom-20 -right-5 bg-slate bg-opacity-100 overflow-y-auto h-24 flex justify-center items-center outline outline-rose outline-1">
             <form 
                 className="w-72 flex justify-center"
-                action={(formData) => actionDetail(formData)}
+                action={(formData) => handleAddDetail(formData)}
             >
                 <div className='outline-double w-3/5'>
                     <label className="hidden" htmlFor="project" aria-label="Add Project" />

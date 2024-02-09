@@ -1,32 +1,25 @@
-import { getXataClient } from "@/xata";
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities";
+import clsx from "clsx";
 
-export default async function DetailCard({ userId, projectId, handleDeleteDetail }: { userId: string, projectId: string, 
-    handleDeleteDetail: (formData : FormData) => void }) {
-    const xataClient = getXataClient();
-
-    const details = await xataClient.db.projectDetails.filter({ projectId }).getMany();
-
-    if (!userId) return;
+export default function DetailCard({ id, description, handleDeleteDetail }: { id: string, description: string | null | undefined, handleDeleteDetail: (formData : FormData) => void }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: id, data: { type: 'detail' }});
 
     return (
-        <div>
-            {
-                details.map(det => 
-                    <div key={det.id} className="flex w-full">
-                        <div className="-indent-4 px-5 flex-grow">
-                            {det.description} 
-                        </div>
-                        <div className="w-6 shrink-0 flex justify-center">
-                            <form action={handleDeleteDetail}>
-                                <input className="hidden" name="detailId" defaultValue={det.id}></input>
-                                <button type="submit" className="w-full h-full">
-                                    -
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                )
-            }
+        <div ref={setNodeRef} {...attributes} style={{ transition, transform: CSS.Translate.toString(transform)}} 
+            className={clsx('flex w-full z-50', isDragging && 'opacity-50 border')} {...listeners}>
+            <div className="-indent-4 px-5 flex-grow">
+                {description}
+            </div>
+
+            <div className="w-6 shrink-0 flex justify-center">
+                <form action={handleDeleteDetail}>
+                    <input className="hidden" name="detailId" defaultValue={id} />
+                    <button className="w-full h-full">
+                        -
+                    </button>
+                </form>
+            </div>
         </div>
     )
 }
