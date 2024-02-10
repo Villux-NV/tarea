@@ -9,7 +9,7 @@ export default function ProjectCard({ id, title, children, handleDeleteCard, han
     }) {
     const { attributes, setNodeRef, listeners, transform, transition, isDragging } = useSortable({ id: id, data: { type: 'project', }});
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -20,8 +20,9 @@ export default function ProjectCard({ id, title, children, handleDeleteCard, han
     };
 
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (containerRef.current && !containerRef.current.contains(e.target)) {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement
+            if (containerRef.current && !containerRef.current.contains(target)) {
                 handleCloseModal();
             }
         };
@@ -39,7 +40,7 @@ export default function ProjectCard({ id, title, children, handleDeleteCard, han
     }
 
     return (
-        <div ref={(el: HTMLDivElement) => {setNodeRef(el); containerRef.current = el;}} {...attributes} style={{ transition, transform: CSS.Translate.toString(transform)}}
+        <div ref={(el: HTMLDivElement) => {setNodeRef(el); containerRef.current = el as HTMLDivElement;}} {...attributes} style={{ transition, transform: CSS.Translate.toString(transform)}}
             className={clsx('border w-64 h-80 m-6 flex flex-col justify-between relative', isDragging && 'opacity-50')}>
             <div className="m-2 flex justify-between">
                 <h2>{title}</h2>

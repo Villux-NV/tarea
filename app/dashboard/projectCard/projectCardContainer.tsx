@@ -6,7 +6,6 @@ import { MasterProjects, ProjectDetailsRecord, getXataClient } from "@/xata";
 import DetailCard from "./_detailCard/detailCard";
 import ProjectCard from "./projectCard";
 import { useState } from "react";
-import clsx from "clsx";
 
 export default function ProjectCardContainer({ userId, projects, details, handleAddDetail, handleDeleteCard, handleDeleteDetail }: { userId: string, projects: any, 
         details: any, handleAddDetail: (formData : FormData) => void, handleDeleteCard: (formData : FormData) => void, handleDeleteDetail: (formData : FormData) => void 
@@ -14,6 +13,7 @@ export default function ProjectCardContainer({ userId, projects, details, handle
     const [projectCards, setProjectCards] = useState(projects);
     const [detailCards, setDetailCards] = useState(details);
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+    const [activeType, setActiveType] = useState(null);
 
     const findValueOfItems = (id: UniqueIdentifier | undefined, type: string) => {
         if (type === 'project') {
@@ -38,8 +38,9 @@ export default function ProjectCardContainer({ userId, projects, details, handle
 
     const handleDragStart = (e: DragStartEvent) => {
         const { active } = e;
-        const { id } = active;
+        const { id, data } = active;
         setActiveId(id);
+        setActiveType(data.current?.type);
     };
 
     const handleDragOver = async (e: DragOverEvent) => {
@@ -181,15 +182,18 @@ export default function ProjectCardContainer({ userId, projects, details, handle
         setActiveId(null);
     }
 
-    const DragDetailCard = ({ id }) => {
-        const { setNodeRef } = useDraggable({ id });
-        const item = findValueOfItems(id, 'detail');
+    const DragOverlayComponent = () => {
+        const { setNodeRef } = useDraggable({ id: activeId });
+        const item = findValueOfItems(activeId, activeType);
 
         return (
             <div ref={setNodeRef} style = {{ pointerEvents: 'none' }}>
-                <div className="-indent-4 px-5 flex-grow border opacity-80">
-                    {item.description}
-                </div>
+                {activeType === 'detail' ? (
+                    <DetailCard key={item.id} id={item.id} description={item.description} />
+
+                ) : (
+                    <ProjectCard key={item.id} id={item.id} title={item.title} />
+                )}
             </div>
         )
     }
@@ -213,7 +217,7 @@ export default function ProjectCardContainer({ userId, projects, details, handle
                 </SortableContext>
 
                 <DragOverlay>
-                    {activeId ? <DragDetailCard id={activeId} /> : null}
+                    {activeId ? <DragOverlayComponent id={activeId} /> : null}
                 </DragOverlay>
             </DndContext>
         </div>
