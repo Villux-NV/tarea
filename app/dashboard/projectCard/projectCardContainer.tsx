@@ -1,11 +1,12 @@
 'use client';
 
-import { DndContext, DragEndEvent, DragMoveEvent, DragStartEvent, KeyboardSensor, PointerSensor, UniqueIdentifier, closestCenter, closestCorners, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragMoveEvent, DragOverEvent, DragOverlay, DragStartEvent, KeyboardSensor, PointerSensor, UniqueIdentifier, closestCenter, closestCorners, useDraggable, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { MasterProjects, MasterProjectsRecord, ProjectDetailsRecord, getXataClient } from "@/xata";
+import { MasterProjects, ProjectDetailsRecord, getXataClient } from "@/xata";
 import DetailCard from "./_detailCard/detailCard";
 import ProjectCard from "./projectCard";
 import { useState } from "react";
+import clsx from "clsx";
 
 export default function ProjectCardContainer({ userId, projects, details, handleAddDetail, handleDeleteCard, handleDeleteDetail }: { userId: string, projects: any, 
         details: any, handleAddDetail: (formData : FormData) => void, handleDeleteCard: (formData : FormData) => void, handleDeleteDetail: (formData : FormData) => void 
@@ -41,7 +42,7 @@ export default function ProjectCardContainer({ userId, projects, details, handle
         setActiveId(id);
     };
 
-    const handleDragMove = async (e: DragMoveEvent) => {
+    const handleDragOver = async (e: DragOverEvent) => {
         const { active, over } = e;
 
         // handle item sorting
@@ -70,17 +71,17 @@ export default function ProjectCardContainer({ userId, projects, details, handle
             
             // handle updates if the order is updated within same project
             if (activeProjectId === overProjectId) {
-                let newDetails = arrayMove(detailCards, activeDetailIndex, overDetailIndex);
-                
-                setDetailCards(newDetails);
+                // let newDetails = arrayMove(detailCards, activeDetailIndex, overDetailIndex);
+                setDetailCards(prevDetails => arrayMove(prevDetails, activeDetailIndex, overDetailIndex));
             } else {
-                let newDetails = [...detailCards];
-                const [movedDetail] = newDetails.splice(detailCards.findIndex((detail) => detail.id === activeDetail.id), 1);
-                movedDetail.projectId = overProjectId;
-                movedDetail.detailOrder = newDetails.filter(detail => detail.projectId === overProjectId).length;
-
-                newDetails.push(movedDetail);
-                setDetailCards(newDetails);
+                setDetailCards(prevDetails => {
+                    let newDetails = [...prevDetails];
+                    const [movedDetail] = newDetails.splice(detailCards.findIndex((detail) => detail.id === activeDetail.id), 1);
+                    movedDetail.projectId = overProjectId;
+                    movedDetail.detailOrder = newDetails.filter(detail => detail.projectId === overProjectId).length;
+                    newDetails.push(movedDetail);
+                    return newDetails;
+                });
             }
         }        
 
@@ -180,11 +181,24 @@ export default function ProjectCardContainer({ userId, projects, details, handle
         setActiveId(null);
     }
 
+    const DragDetailCard = ({ id }) => {
+        const { setNodeRef } = useDraggable({ id });
+        const item = findValueOfItems(id, 'detail');
+
+        return (
+            <div ref={setNodeRef} style = {{ pointerEvents: 'none' }}>
+                <div className="-indent-4 px-5 flex-grow border opacity-80">
+                    {item.description}
+                </div>
+            </div>
+        )
+    }
+
     if (!userId) return;
 
     return (
         <div className="h-fill flex flex-wrap">
-            <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
+            <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
                 <SortableContext items={projectCards} strategy={rectSortingStrategy}>
                     {projectCards.map((project: MasterProjects) => (
                         <ProjectCard key={project.id} id={project.id} title={project.project} handleDeleteCard={handleDeleteCard} handleAddDetail={handleAddDetail}>
@@ -197,6 +211,10 @@ export default function ProjectCardContainer({ userId, projects, details, handle
                         </ProjectCard>
                     ))}
                 </SortableContext>
+
+                <DragOverlay>
+                    {activeId ? <DragDetailCard id={activeId} /> : null}
+                </DragOverlay>
             </DndContext>
         </div>
     )

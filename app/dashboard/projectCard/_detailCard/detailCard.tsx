@@ -7,7 +7,7 @@ export default function DetailCard({ id, description, handleDeleteDetail }: { id
 
     return (
         <div ref={setNodeRef} {...attributes} style={{ transition, transform: CSS.Translate.toString(transform)}} 
-            className={clsx('flex w-full z-50', isDragging && 'opacity-50 border')} {...listeners}>
+            className={clsx('flex w-full pb-1', isDragging && 'opacity-50 border')} {...listeners}>
             <div className="-indent-4 px-5 flex-grow">
                 {description}
             </div>
